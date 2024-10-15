@@ -39,6 +39,7 @@ Install [Golang Migrate](https://github.com/golang-migrate/migrate)
 Setup Go dependencies
 
 `go get .`
+
 `go mod tidy`
 
 Run Go project
