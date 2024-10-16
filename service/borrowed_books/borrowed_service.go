@@ -16,10 +16,10 @@ func (s *BorrowedService) ListReturnedBooks(userId string) ([]borrowedstore.Borr
 	return s.BorrowedStore.GetUserReturnedBooks(userId)
 }
 
-func (s *BorrowedService) CreateBorrowedBooks(bookId int, userId int) error {
-	return s.BorrowedStore.SaveBorrowedBooks(bookId, userId)
+func (s *BorrowedService) CreateBorrowedBooks(bookId int, userId int, borrowDate string) error {
+	return s.BorrowedStore.SaveBorrowedBooks(bookId, userId, borrowDate)
 }
 
-func (s *BorrowedService) UpdateBorrowedBooks(id int) error {
-	return s.BorrowedStore.UpdateReturnedBooks(id)
+func (s *BorrowedService) UpdateBorrowedBooks(id int, returnDate string) error {
+	return s.BorrowedStore.UpdateReturnedBooks(id, returnDate)
 }

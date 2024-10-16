@@ -23,10 +23,12 @@ type BorrowedBook struct {
 type BorrowedBookInsert struct {
   UserID int `json:"user_id"`
   BookID int `json:"book_id"`
+  BorrowDate string `json:"borrow_date"`
 }
 
 type BorrowedBookUpdate struct {
   ID int `json:"id"`
+  ReturnDate string `json:"return_date"`
 }
 
 func (h *BorrowedHandler) ListBorrowedBooksHandler(res http.ResponseWriter, req *http.Request) {
@@ -92,7 +94,13 @@ func (h *BorrowedHandler) CreateBorrowedBooksHandler(res http.ResponseWriter, re
     return
   }
 
-  if err := h.BorrowedService.CreateBorrowedBooks(borrowedBook.BookID, borrowedBook.UserID); err != nil {
+  // Validate DateTime format
+  if match := utils.MatchDateTime(borrowedBook.BorrowDate); match == false {
+    http.Error(res, "Invalid borrow date format", http.StatusBadRequest)
+    return
+  }
+
+  if err := h.BorrowedService.CreateBorrowedBooks(borrowedBook.BookID, borrowedBook.UserID, borrowedBook.BorrowDate); err != nil {
     http.Error(res, "Failed to create borrowed book", http.StatusInternalServerError)
     return
   }
@@ -113,7 +121,13 @@ func (h *BorrowedHandler) UpdateReturnedBooksHandler(res http.ResponseWriter, re
     return
   }
 
-  if err := h.BorrowedService.UpdateBorrowedBooks(returnedBook.ID); err != nil {
+  // Validate DateTime format
+  if match := utils.MatchDateTime(returnedBook.ReturnDate); match == false {
+    http.Error(res, "Invalid borrow date format", http.StatusBadRequest)
+    return
+  }
+
+  if err := h.BorrowedService.UpdateBorrowedBooks(returnedBook.ID, returnedBook.ReturnDate); err != nil {
     http.Error(res, "Failed to update borrowed book", http.StatusInternalServerError)
     return
   }

@@ -5,14 +5,14 @@ Library REST API made with Go v1.23.2
 ### Users API endpoints:
 
 - `GET /users/list`
-- `POST /users/add`
+- `POST /users/add => Example payload { "username": (value string), "email": (value string) }`
 
 ### Borrowed books API endpoints:
 
 - `GET /borrowed/{userId}`
 - `GET /returned/{userId}`
-- `POST /borrowed/add`
-- `PUT /returned/update`
+- `POST /borrowed/add => Example payload { "book_id": (value int), "user_id": (value int), "borrow_date": (value string[YYYY-MM-DD hh:mm:ss]) }`
+- `PUT /returned/update => Example payload { "id": (value int), "return_date": (value string[YYYY-MM-DD hh:mm:ss]) }`
 
 ### Books API endpoints:
 
@@ -26,11 +26,7 @@ Create PostgreSQL database
 
 ## Project setup
 
-Cd into project folder
-
-`cd github.com/saks07/go-api`
-
-In current folder create .env file
+Create .env file in project root folder
 
 `cp .env.example .env`
 

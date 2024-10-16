@@ -5,8 +5,6 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"go-api/utils"
-	"time"
-	"fmt"
 )
 
 type BorrowedBook struct {
@@ -24,8 +22,8 @@ type BorrowedBook struct {
 type BorrowedStore interface {
 	GetUserBorrowedBooks(userId string) ([]BorrowedBook, error)
 	GetUserReturnedBooks(userId string) ([]BorrowedBook, error)
-	SaveBorrowedBooks(bookId int, userId int) error
-	UpdateReturnedBooks(id int) error
+	SaveBorrowedBooks(bookId int, userId int, borrowDate string) error
+	UpdateReturnedBooks(id int, returnDate string) error
 }
 
 type SQLBorrowedStore struct {
@@ -91,7 +89,7 @@ func (s *SQLBorrowedStore) GetUserReturnedBooks(userId string) ([]BorrowedBook, 
    return borrowedBooks, nil
 }
 
-func (s *SQLBorrowedStore) SaveBorrowedBooks(bookId int, userId int) error {
+func (s *SQLBorrowedStore) SaveBorrowedBooks(bookId int, userId int, borrowDate string) error {
 	var query string = utils.QueryStringTable("INSERT INTO {table} (book_id, user_id, borrow_date, return_date) VALUES ($1, $2, $3, NULL)", dbTable)
 	stmt, stmtErr := s.DB.Prepare(query)
 	
@@ -101,13 +99,12 @@ func (s *SQLBorrowedStore) SaveBorrowedBooks(bookId int, userId int) error {
 
 	defer stmt.Close()
 
-	formatted := createDateFormatted();
-	_, err := stmt.Exec(bookId, userId, formatted)
+	_, err := stmt.Exec(bookId, userId, borrowDate)
 
 	return err
 }
 
-func (s *SQLBorrowedStore) UpdateReturnedBooks(id int) error {
+func (s *SQLBorrowedStore) UpdateReturnedBooks(id int, returnDate string) error {
 	var query string = utils.QueryStringTable("UPDATE {table} SET return_date = $1 WHERE id = $2", dbTable)
 	stmt, stmtErr := s.DB.Prepare(query)
 	
@@ -117,13 +114,7 @@ func (s *SQLBorrowedStore) UpdateReturnedBooks(id int) error {
 
 	defer stmt.Close()
 
-	formatted := createDateFormatted();
-	_, err := stmt.Exec(formatted, id)
+	_, err := stmt.Exec(returnDate, id)
 
 	return err
-}
-
-func createDateFormatted() string {
-	timeNow := time.Now()
-	return fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", timeNow.Year(), timeNow.Month(), timeNow.Day(), timeNow.Hour(), timeNow.Minute(), timeNow.Second())
 }
